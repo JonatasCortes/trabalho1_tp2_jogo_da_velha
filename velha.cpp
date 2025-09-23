@@ -15,7 +15,10 @@
 
 int VerificaVelha( int velha[3][3] )
 {
-	return 0; /*!< retorna zero para teste */ 
+	if(velha[0][2] == 1 and velha[1][2] == 1 and velha[2][2] == 1){
+		return 1;
+	}
+	return 0;
 }
 
 
