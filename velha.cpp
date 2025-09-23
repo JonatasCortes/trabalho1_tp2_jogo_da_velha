@@ -13,31 +13,31 @@
  *  Descrever o que a funcao faz
  */ 
 
-int VerificaVelha( int velha[3][3] )
-{
-	int center_column = 1;
-	for(int row=0; row<3; row++){
+int check_winner_by_axis(int velha[3][3], bool y){
 
-		int left_square = velha[row][center_column-1];
-		int center_square = velha[row][center_column];
-		int right_square = velha[row][center_column+1];
+	int center = 1;
+	int dim = 3;
 
-		if(center_square == left_square && center_square == right_square && center_square > 0){
-			return center_square;
+	for(int i=0; i<dim; i++){
+
+		int a = y ? velha[i][center-1] : velha[center-1][i];
+		int b = y ? velha[i][center]   : velha[center][i];
+		int c = y ? velha[i][center+1] : velha[center+1][i];
+
+		if(a > 0 && a == b && a == c){
+			return a;
 		}
 	}
+	return 0;
+}
 
-	int center_row = 1;
-	for(int column=0; column<3; column++){
+int VerificaVelha(int velha[3][3]){
 
-		int up_square = velha[center_row-1][column];
-		int center_square = velha[center_row][column];
-		int down_square = velha[center_row+1][column];
+	int winner = check_winner_by_axis(velha);
+	if(winner != 0) return winner;
 
-		if(center_square == up_square && center_square == down_square && center_square > 0){
-			return center_square;
-		}
-	}
+	winner = check_winner_by_axis(velha, true);
+	if(winner != 0) return winner;
 
 	return 0;
 }
