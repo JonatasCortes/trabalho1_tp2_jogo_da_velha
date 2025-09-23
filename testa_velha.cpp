@@ -6,8 +6,8 @@
 #include "velha.hpp"
 
 #define CATCH_CONFIG_MAIN
-#include "catch.hpp"
-  
+#include "catch_amalgamated.hpp"
+
 
 
 TEST_CASE( "Testa velha", "[single-file]" ) {
@@ -16,7 +16,5 @@ TEST_CASE( "Testa velha", "[single-file]" ) {
 						  { 0, 2, 1 }
 					  };
     REQUIRE( VerificaVelha(teste1) == 1 );
-
-
 } 
  
