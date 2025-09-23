@@ -1,43 +1,42 @@
-all: testa_velha.cpp   velha.cpp velha.hpp velha.o
-	g++ -std=c++11 -Wall velha.o testa_velha.cpp -o testa_velha
-	./testa_velha
-	#use comentario se necessario
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall
+GCOV_FLAGS = -fprofile-arcs -ftest-coverage
+DEBUG_FLAGS = -g
+TARGET = testa_velha
 
-compile: testa_velha.cpp   velha.cpp velha.hpp velha.o
-	g++ -std=c++11 -Wall velha.o testa_velha.cpp -o testa_velha
+YOUR_SOURCES = velha.cpp velha.hpp testa_velha.cpp
+TEST_BUILD_SOURCES = testa_velha.cpp catch_amalgamated.cpp
 
-velha.o : velha.cpp velha.hpp
-	g++ -std=c++11 -Wall -c velha.cpp
-	
-testa_velha: 	testa_velha.cpp   velha.cpp velha.hpp velha.o
-	g++ -std=c++11 -Wall velha.o testa_velha.cpp -o testa_velha
-	
-test: testa_velha	
-	./testa_velha
-	
-cpplint: testa_velha.cpp   velha.cpp velha.hpp
-	cpplint   --exclude=catch_amalgamated.hpp  *.*
-	
-gcov: testa_velha.cpp   velha.cpp velha.hpp 
-	g++ -std=c++11 -Wall -fprofile-arcs -ftest-coverage -c velha.cpp
-	g++ -std=c++11 -Wall -fprofile-arcs -ftest-coverage velha.o testa_velha.cpp -o testa_velha
-	./testa_velha
-	gcov *.cpp	
-	 
-debug: testa_velha.cpp   velha.cpp velha.hpp 
-	g++ -std=c++11 -Wall -g -c velha.cpp
-	g++ -std=c++11 -Wall  -g velha.o testa_velha.cpp -o testa_velha
-	gdb testa_velha
-	
-	
-cppcheck: testa_velha.cpp   velha.cpp velha.hpp
-	cppcheck  --enable=warning .
+all: test
 
-valgrind: testa_velha
-	valgrind --leak-check=yes --log-file=valgrind.rpt testa_velha
+$(TARGET): $(TEST_BUILD_SOURCES) velha.o
+	$(CXX) $(CXXFLAGS) velha.o $(TEST_BUILD_SOURCES) -o $(TARGET)
 
+velha.o: velha.cpp velha.hpp
+	$(CXX) $(CXXFLAGS) -c velha.cpp
+
+test: $(TARGET)
+	./$(TARGET)
+
+cpplint:
+	cpplint $(YOUR_SOURCES)
+
+cppcheck:
+	cppcheck --quiet --enable=warning $(YOUR_SOURCES)
+
+gcov:
+	$(CXX) $(CXXFLAGS) $(GCOV_FLAGS) -c velha.cpp
+	$(CXX) $(CXXFLAGS) $(GCOV_FLAGS) velha.o $(TEST_BUILD_SOURCES) -o $(TARGET)
+	./$(TARGET)
+	gcov velha.cpp
+
+debug:
+	$(CXX) $(CXXFLAGS) $(DEBUG_FLAGS) -c velha.cpp
+	$(CXX) $(CXXFLAGS) $(DEBUG_FLAGS) -g velha.o $(TEST_BUILD_SOURCES) -o $(TARGET)
+	gdb $(TARGET)
+
+valgrind: $(TARGET)
+	valgrind --leak-check=yes --log-file=valgrind.rpt ./$(TARGET)
 
 clean:
-	rm -rf *.o *.exe *.gc* testa_velha 
-	
-	
+	rm -f *.o *.gc* *.gcov *.gcda *.gcno $(TARGET) valgrind.rpt
